@@ -1,8 +1,9 @@
 {
     "sites": {
-        "bsrfc-video.oathompsonjones.co.uk": 3002,
+        "oathompsonjones.co.uk": 3000,
         "haskell-playground.co.uk": 3001,
-        "oathompsonjones.co.uk": 3000
+        "bsrfc-video.oathompsonjones.co.uk": 3002,
+        "bsrfc-beta.oathompsonjones.co.uk": 3003
     },
     "sslPath": "/etc/letsencrypt/live/oathompsonjones.co.uk"
 }

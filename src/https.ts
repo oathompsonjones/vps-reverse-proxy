@@ -12,17 +12,23 @@ const sites: Record<string, number> = config.sites;
  */
 export default function createHttpsServer(proxy: httpProxy, ssl: https.ServerOptions): https.Server {
     return https.createServer(ssl, (req, res) => {
-        const host = req.headers.host?.replace(/^www\./u, "");
-        const port = host !== undefined && sites[host];
+        const host = req.headers.host?.toLowerCase().replace(/:\d+$/u, "").replace(/^www\./u, "");
+        const matchedSite = host === undefined
+            ? undefined
+            : Object.entries(sites)
+                .filter(([domain]) => host === domain || host.endsWith(`.${domain}`))
+                .sort(([domainA], [domainB]) => domainB.length - domainA.length)[0];
 
-        if (typeof port === "number") {
-            proxy.web(req, res, { target: `http://localhost:${port}` });
-        } else {
+        if (matchedSite === undefined) {
             res.writeHead(421, {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 "Content-Type": "text/plain",
             });
             res.end("421 Misdirected Request");
+        } else {
+            const [, port] = matchedSite;
+
+            proxy.web(req, res, { target: `http://localhost:${port}` });
         }
     });
 }
